@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Location Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        form { max-width: 400px; margin: auto; }
+        label { display: block; margin-top: 1em; }
+        input[type=text] { width: 100%; padding: 0.5em; margin-top: 0.2em; }
+        .errorlist { color: red; margin: 0; padding: 0; list-style: none; }
+        .success { color: green; }
+    </style>
+    <script>
+        function validateForm() {
+            var city = document.forms["locationForm"]["city"].value.trim();
+            var state = document.forms["locationForm"]["state"].value.trim();
+            var country = document.forms["locationForm"]["country"].value.trim();
+            if (!city || !state) {
+                alert("Please fill in both City and State/Province/Region.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <h1>Enter Location</h1>
+    <form name="locationForm" method="post" onsubmit="return validateForm();">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <label for="id_city">City:</label>
+        {{ form.city }}
+        {{ form.city.errors }}
+        <label for="id_state">State/Province/Region:</label>
+        {{ form.state }}
+        {{ form.state.errors }}
+        <label for="id_country">Country (optional, defaults to USA):</label>
+        {{ form.country }}
+        {{ form.country.errors }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if submitted %}
+        <div class="success">
+            <h2>Submitted Data:</h2>
+            <ul>
+                <li>City: {{ data.city }}</li>
+                <li>State/Province/Region: {{ data.state }}</li>
+                <li>Country: {{ data.country }}</li>
+            </ul>
+        </div>
+    {% endif %}
+</body>
+</html>
