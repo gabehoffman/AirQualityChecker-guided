@@ -5,13 +5,111 @@
     <meta charset="UTF-8">
     <title>Location Form</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2em; }
-        form { max-width: 400px; margin: auto; }
-        label { display: block; margin-top: 1em; }
-        input[type=text] { width: 100%; padding: 0.5em; margin-top: 0.2em; }
-        .errorlist, .error { color: red; margin: 0; padding: 0; list-style: none; }
-        .success { color: green; }
-        .aqi-box { border: 1px solid #ccc; padding: 1em; margin-top: 2em; background: #f9f9f9; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 3em auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.03);
+            padding: 2.5em 2em 2em 2em;
+        }
+        h1 {
+            font-size: 2.1em;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 1.2em;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2em;
+        }
+        label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 0.3em;
+        }
+        input[type=text] {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.7em 1em;
+            font-size: 1em;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+        input[type=text]:focus {
+            border: 1.5px solid #0071e3;
+            outline: none;
+            background: #fff;
+        }
+        button[type=submit] {
+            background: linear-gradient(90deg, #0071e3 0%, #005bb5 100%);
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            padding: 0.9em 0;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,113,227,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        button[type=submit]:hover {
+            background: linear-gradient(90deg, #005bb5 0%, #0071e3 100%);
+            box-shadow: 0 4px 16px rgba(0,113,227,0.13);
+        }
+        .errorlist, .error {
+            color: #d32d2f;
+            background: #fff0f0;
+            border: 1px solid #ffd6d6;
+            border-radius: 5px;
+            padding: 0.7em 1em;
+            margin: 0 0 1em 0;
+            font-size: 1em;
+        }
+        .aqi-box {
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f7fafd;
+            padding: 1.5em 1.2em;
+            margin-top: 2em;
+            box-shadow: 0 1.5px 6px rgba(0,0,0,0.04);
+        }
+        .aqi-box h2 {
+            font-size: 1.3em;
+            color: #0071e3;
+            margin-bottom: 1em;
+        }
+        .aqi-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1em 0;
+        }
+        .aqi-box li {
+            margin-bottom: 0.5em;
+            font-size: 1.05em;
+        }
+        .aqi-box strong {
+            color: #222;
+        }
+        .aqi-box p {
+            margin: 0.7em 0 0 0;
+            font-size: 1.05em;
+            color: #444;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.2em 0.5em;
+            }
+        }
     </style>
     <script>
         function validateForm() {
@@ -26,42 +124,44 @@
     </script>
 </head>
 <body>
-    <h1>Enter Location</h1>
-    <form name="locationForm" method="post" onsubmit="return validateForm();">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        <label for="id_city">City:</label>
-        {{ form.city }}
-        {{ form.city.errors }}
-        <label for="id_state">State/Province/Region:</label>
-        {{ form.state }}
-        {{ form.state.errors }}
-        <label for="id_country">Country (optional, defaults to USA):</label>
-        {{ form.country }}
-        {{ form.country.errors }}
-        <button type="submit">Submit</button>
-    </form>
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
-    {% if submitted and not error %}
-        <div class="aqi-box">
-            <h2>Air Quality Results</h2>
-            <ul>
-                <li><strong>City:</strong> {{ form.cleaned_data.city }}</li>
-                <li><strong>State/Province/Region:</strong> {{ form.cleaned_data.state }}</li>
-                <li><strong>Country:</strong> {{ form.cleaned_data.country|default:'USA' }}</li>
-                <li><strong>Measurement Time:</strong> {{ measurement_time }}</li>
-                <li><strong>AQI (US):</strong> {{ aqi }}</li>
-                <li><strong>PM2.5:</strong> {{ pm2_5 }}</li>
-                <li><strong>PM10:</strong> {{ pm10 }}</li>
-                <li><strong>Ozone:</strong> {{ ozone }}</li>
-            </ul>
-            {% if aqi %}
-                <p><strong>Health Advisory:</strong> {{ aqi|aqi_advisory }}</p>
-            {% endif %}
-        </div>
-    {% endif %}
+    <div class="container">
+        <h1>Air Quality Checker</h1>
+        <form name="locationForm" method="post" onsubmit="return validateForm();">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <label for="id_city">City:</label>
+            {{ form.city }}
+            {{ form.city.errors }}
+            <label for="id_state">State/Province/Region:</label>
+            {{ form.state }}
+            {{ form.state.errors }}
+            <label for="id_country">Country (optional, defaults to USA):</label>
+            {{ form.country }}
+            {{ form.country.errors }}
+            <button type="submit">Check Air Quality</button>
+        </form>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        {% if submitted and not error %}
+            <div class="aqi-box">
+                <h2>Air Quality Results</h2>
+                <ul>
+                    <li><strong>City:</strong> {{ form.cleaned_data.city }}</li>
+                    <li><strong>State/Province/Region:</strong> {{ form.cleaned_data.state }}</li>
+                    <li><strong>Country:</strong> {{ form.cleaned_data.country|default:'USA' }}</li>
+                    <li><strong>Measurement Time:</strong> {{ measurement_time }}</li>
+                    <li><strong>AQI (US):</strong> {{ aqi }}</li>
+                    <li><strong>PM2.5:</strong> {{ pm2_5 }}</li>
+                    <li><strong>PM10:</strong> {{ pm10 }}</li>
+                    <li><strong>Ozone:</strong> {{ ozone }}</li>
+                </ul>
+                {% if aqi %}
+                    <p><strong>Health Advisory:</strong> {{ aqi|aqi_advisory }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
     {# DEBUG: #}
     <div style="display:none;">submitted={{ submitted }} error={{ error }}</div>
 </body>
