@@ -44,7 +44,7 @@
     {% if error %}
         <div class="error">{{ error }}</div>
     {% endif %}
-    {% if submitted %}
+    {% if submitted and not error %}
         <div class="aqi-box">
             <h2>Air Quality Results</h2>
             <ul>
@@ -62,5 +62,7 @@
             {% endif %}
         </div>
     {% endif %}
+    {# DEBUG: #}
+    <div style="display:none;">submitted={{ submitted }} error={{ error }}</div>
 </body>
 </html>

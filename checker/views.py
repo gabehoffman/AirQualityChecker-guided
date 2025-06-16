@@ -4,22 +4,24 @@ from .utils import geocode_location, fetch_air_quality
 
 
 def location_view(request):
-    context = {"form": LocationForm()}
+    context = {"form": LocationForm(), "submitted": False, "error": None}
     if request.method == "POST":
         form = LocationForm(request.POST)
         context["form"] = form
+        context["submitted"] = False
+        context["error"] = None
         if form.is_valid():
             city = form.cleaned_data["city"]
             state = form.cleaned_data["state"]
             country = form.cleaned_data.get("country")
             coords = geocode_location(city, state, country)
             if not coords:
-                context["error"] = "Location not found. Please check your input."
+                context["error"] = "Location not found"
             else:
                 lat, lon = coords
                 aq_data = fetch_air_quality(lat, lon)
                 if not aq_data or "hourly" not in aq_data:
-                    context["error"] = "Could not fetch air quality data. Please try again later."
+                    context["error"] = "No recent air quality data available."
                 else:
                     # Get the latest available AQI and details (find the most recent non-None value)
                     hourly = aq_data["hourly"]
@@ -44,6 +46,11 @@ def location_view(request):
                             context["submitted"] = True
                         else:
                             context["error"] = "No recent air quality data available."
+                            context["submitted"] = False
                     else:
                         context["error"] = "No recent air quality data available."
+                        context["submitted"] = False
+    # DEBUG: Print context for test troubleshooting
+    import sys
+    print('DEBUG CONTEXT:', context, file=sys.stderr)
     return render(request, "checker/location_form.html", context)
