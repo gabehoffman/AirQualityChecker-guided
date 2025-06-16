@@ -1,3 +1,4 @@
+{% load aqi_extras %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,14 +9,14 @@
         form { max-width: 400px; margin: auto; }
         label { display: block; margin-top: 1em; }
         input[type=text] { width: 100%; padding: 0.5em; margin-top: 0.2em; }
-        .errorlist { color: red; margin: 0; padding: 0; list-style: none; }
+        .errorlist, .error { color: red; margin: 0; padding: 0; list-style: none; }
         .success { color: green; }
+        .aqi-box { border: 1px solid #ccc; padding: 1em; margin-top: 2em; background: #f9f9f9; }
     </style>
     <script>
         function validateForm() {
             var city = document.forms["locationForm"]["city"].value.trim();
             var state = document.forms["locationForm"]["state"].value.trim();
-            var country = document.forms["locationForm"]["country"].value.trim();
             if (!city || !state) {
                 alert("Please fill in both City and State/Province/Region.");
                 return false;
@@ -40,14 +41,25 @@
         {{ form.country.errors }}
         <button type="submit">Submit</button>
     </form>
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
     {% if submitted %}
-        <div class="success">
-            <h2>Submitted Data:</h2>
+        <div class="aqi-box">
+            <h2>Air Quality Results</h2>
             <ul>
-                <li>City: {{ data.city }}</li>
-                <li>State/Province/Region: {{ data.state }}</li>
-                <li>Country: {{ data.country }}</li>
+                <li><strong>City:</strong> {{ form.cleaned_data.city }}</li>
+                <li><strong>State/Province/Region:</strong> {{ form.cleaned_data.state }}</li>
+                <li><strong>Country:</strong> {{ form.cleaned_data.country|default:'USA' }}</li>
+                <li><strong>Measurement Time:</strong> {{ measurement_time }}</li>
+                <li><strong>AQI (US):</strong> {{ aqi }}</li>
+                <li><strong>PM2.5:</strong> {{ pm2_5 }}</li>
+                <li><strong>PM10:</strong> {{ pm10 }}</li>
+                <li><strong>Ozone:</strong> {{ ozone }}</li>
             </ul>
+            {% if aqi %}
+                <p><strong>Health Advisory:</strong> {{ aqi|aqi_advisory }}</p>
+            {% endif %}
         </div>
     {% endif %}
 </body>
